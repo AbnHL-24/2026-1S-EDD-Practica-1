@@ -1,31 +1,50 @@
 #include <iostream>
-#include "include/Mazo.h"
+#include <string>
+#include <vector>
 #include "include/Carta.h"
+#include "include/Mazo.h"
+#include "include/Mano.h"
+#include "include/Jugador.h"
+#include "include/ListaCircular.h"
 
 int main() {
-    std::cout << "=== PRUEBA DE GENERACIÓN DE MAZO ===" << std::endl;
-    
-    // 1. Crear el mazo
-    Mazo mazo(false); // false = Mazo estándar (no flip)
-    
-    std::cout << "Mazo creado. Cartas totales: " << mazo.cartasRestantes() << std::endl;
+    std::cout << "=== PRUEBA DE ESTRUCTURAS DE JUGADORES ===" << std::endl;
 
-    // 2. Barajar
-    std::cout << "Barajando cartas..." << std::endl;
+    // 1. Crear Lista de Jugadores
+    ListaCircular lista;
+    lista.agregarJugador("Juan");
+    lista.agregarJugador("Pedro");
+    lista.agregarJugador("Ana");
+
+    // 2. Mostrar Jugadores
+    std::cout << "Jugadores en partida:" << std::endl;
+    lista.mostrarJugadores();
+
+    // 3. Crear Mazo y Barajar
+    Mazo mazo(false);
     mazo.barajar();
 
-    // 3. Robar algunas cartas para verificar variedad
-    std::cout << "\n--- Robando 10 cartas de prueba ---" << std::endl;
-    for (int i = 0; i < 10; ++i) {
-        if (!mazo.estaVacio()) {
-            Carta* c = mazo.robarCarta();
-            std::cout << "Carta " << (i + 1) << ": " << c->toString() << std::endl;
-            delete c; // Importante liberar memoria en esta prueba
+    // 4. Repartir Cartas
+    // (Lógica simplificada para probar Mano y Jugador)
+    std::cout << "\nRepartiendo 5 cartas a cada uno..." << std::endl;
+    for (int i = 0; i < 3; ++i) { // 3 jugadores
+        Jugador* actual = lista.obtenerJugadorActual();
+        for (int j = 0; j < 5; ++j) {
+            actual->tomarCarta(mazo.robarCarta());
         }
+        lista.siguienteTurno();
     }
 
-    std::cout << "\nCartas restantes en el mazo: " << mazo.cartasRestantes() << std::endl;
-    std::cout << "=== PRUEBA FINALIZADA ===" << std::endl;
+    // 5. Mostrar Manos
+    std::cout << "\nManos después de repartir:" << std::endl;
+    lista.siguienteTurno(); // Reiniciar al primer jugador (si es circular)
+    for (int i = 0; i < 3; ++i) {
+        Jugador* actual = lista.obtenerJugadorActual();
+        actual->mostrarMano();
+        std::cout << "--------------------" << std::endl;
+        lista.siguienteTurno();
+    }
 
+    std::cout << "=== PRUEBA FINALIZADA ===" << std::endl;
     return 0;
 }
