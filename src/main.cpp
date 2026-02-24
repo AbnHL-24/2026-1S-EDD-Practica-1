@@ -1,16 +1,31 @@
 #include <iostream>
+#include "include/Mazo.h"
+#include "include/Carta.h"
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+    std::cout << "=== PRUEBA DE GENERACIÓN DE MAZO ===" << std::endl;
+    
+    // 1. Crear el mazo
+    Mazo mazo(false); // false = Mazo estándar (no flip)
+    
+    std::cout << "Mazo creado. Cartas totales: " << mazo.cartasRestantes() << std::endl;
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+    // 2. Barajar
+    std::cout << "Barajando cartas..." << std::endl;
+    mazo.barajar();
+
+    // 3. Robar algunas cartas para verificar variedad
+    std::cout << "\n--- Robando 10 cartas de prueba ---" << std::endl;
+    for (int i = 0; i < 10; ++i) {
+        if (!mazo.estaVacio()) {
+            Carta* c = mazo.robarCarta();
+            std::cout << "Carta " << (i + 1) << ": " << c->toString() << std::endl;
+            delete c; // Importante liberar memoria en esta prueba
+        }
     }
 
+    std::cout << "\nCartas restantes en el mazo: " << mazo.cartasRestantes() << std::endl;
+    std::cout << "=== PRUEBA FINALIZADA ===" << std::endl;
+
     return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
 }
