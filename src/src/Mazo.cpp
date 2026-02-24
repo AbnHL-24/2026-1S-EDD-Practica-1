@@ -16,12 +16,31 @@ Mazo::~Mazo() {
 }
 
 void Mazo::inicializarMazoEstandar() {
-    // Ejemplo de creación de algunas cartas
-    // 0: Rojo, 1: Azul, 2: Verde, 3: Amarillo
-    // 0-9: Numeros, 10: Salta, 11: Reversa, 12: TomaDos
-    // 13: Comodin, 14: ComodinTomaCuatro
+    Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
     
-    // Aquí iría la lógica para poblar el mazo
+    for (const auto& color : colores) {
+        // 1 carta de valor 0
+        cartas.push(new Carta(color, Valor::CERO));
+
+        // 2 cartas de valor 1-9
+        for (int i = 1; i <= 9; ++i) {
+            cartas.push(new Carta(color, static_cast<Valor>(i)));
+            cartas.push(new Carta(color, static_cast<Valor>(i)));
+        }
+
+        // 2 cartas de acción: Salta, Reversa, TomaDos
+        Valor acciones[] = {Valor::SALTA, Valor::REVERSA, Valor::TOMA_DOS};
+        for (const auto& accion : acciones) {
+            cartas.push(new Carta(color, accion));
+            cartas.push(new Carta(color, accion));
+        }
+    }
+
+    // Cartas Comodín (4 de cada tipo)
+    for (int i = 0; i < 4; ++i) {
+        cartas.push(new Carta(Color::NEGRO, Valor::COMODIN));
+        cartas.push(new Carta(Color::NEGRO, Valor::COMODIN_TOMA_CUATRO));
+    }
 }
 
 void Mazo::barajar() {
@@ -56,7 +75,8 @@ int Mazo::cartasRestantes() const {
 
 void Mazo::rellenarDesde(Pila<Carta*>& pilaDescarte) {
     // Lógica para rellenar el mazo desde la pila de descarte
-    // y luego barajar
+    // Mover cartas de la pila de descarte al mazo (excepto quizás la última jugada, 
+    // pero eso se suele manejar fuera, asumiendo que aquí entra lo que se puede rebarajar)
     while (!pilaDescarte.estaVacia()) {
         cartas.push(pilaDescarte.pop());
     }
