@@ -20,16 +20,16 @@ Juego::~Juego() {
 
 void Juego::inicializarJuego() {
     int numJugadores;
-    std::cout << "Ingrese el número de jugadores (2-10): ";
+    std::cout << "Ingrese el numero de jugadores (2-10): ";
     while (!(std::cin >> numJugadores) || numJugadores < 2 || numJugadores > 10) {
-        std::cout << "Número inválido. Intente de nuevo: ";
+        std::cout << "Numero invalido. Intente de nuevo: ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     std::cin.ignore(); // Limpiar buffer
 
     int cantidadMazosCalculada = ((numJugadores - 1) / 6) + 1;
-    std::cout << "Configuración: " << numJugadores << " jugadores. Se usarán " << cantidadMazosCalculada << " mazos." << std::endl;
+    std::cout << "Configuracion: " << numJugadores << " jugadores. Se usaran " << cantidadMazosCalculada << " mazos." << std::endl;
 
     for (int i = 0; i < numJugadores; ++i) {
         std::string nombre;
@@ -40,7 +40,7 @@ void Juego::inicializarJuego() {
 
     // Calcular número de mazos necesarios
     // Regla: 1-6 jugadores: 1 mazo. 7-12: 2 mazos, etc.
-    // Fórmula: ((n_jugadores - 1) / 6 + 1)
+    // Formula: ((n_jugadores - 1) / 6 + 1)
     int cantidadMazos = ((numJugadores - 1) / 6) + 1;
     
     // Reconstruir el mazo con la cantidad correcta
@@ -50,7 +50,7 @@ void Juego::inicializarJuego() {
     mazo->barajar();
     repartirCartasIniciales();
 
-    // Poner la primera carta en la pila de descarte
+    // Poner la primera carta en la pila de descárte
     Carta* primeraCarta = mazo->robarCarta();
     // Validar que no sea un +4 al inicio
     while (primeraCarta->getValor() == Valor::COMODIN_TOMA_CUATRO) {
@@ -62,7 +62,7 @@ void Juego::inicializarJuego() {
     colorActual = primeraCarta->getColor();
     valorActual = primeraCarta->getValor();
 
-    std::cout << "\n¡El juego ha comenzado!" << std::endl;
+    std::cout << "\nEl juego ha comenzado!" << std::endl;
     std::cout << "Carta inicial: " << primeraCarta->toString() << std::endl;
 }
 
@@ -84,7 +84,7 @@ void Juego::buclePrincipal() {
 
         // Verificar victoria
         if (actual->getMano()->getCantidad() == 0) {
-            std::cout << "\n¡¡¡ " << actual->getNombre() << " HA GANADO !!!" << std::endl;
+            std::cout << "\n" << actual->getNombre() << " HA GANADO !!!" << std::endl;
             juegoTerminado = true;
         } else {
             siguienteTurno();
@@ -112,7 +112,7 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
 
         jugadorActual->mostrarMano();
         
-        std::cout << "Opciones: [Indice carta] para jugar, [-1] para robar: ";
+        std::cout << "Opciones: [Indice carta] para jugar, [0] para robar: ";
         int opcion;
         if (!(std::cin >> opcion)) {
             std::cin.clear();
@@ -120,10 +120,10 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
             continue;
         }
 
-        if (opcion == -1) {
+        if (opcion == 0) {
             // Robar carta
             if (mazo->estaVacio()) {
-                std::cout << "Mazo vacío, rebarajando descarte..." << std::endl;
+                std::cout << "Mazo vacio, rebarajando descarte..." << std::endl;
                 if (!pilaDescarte->estaVacia()) {
                     Carta* cima = pilaDescarte->pop(); 
                     mazo->rellenarDesde(*pilaDescarte);
@@ -135,11 +135,14 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
                 Carta* robada = mazo->robarCarta();
                 jugadorActual->tomarCarta(robada);
                 std::cout << "Has robado: " << robada->toString() << std::endl;
-                // Opción para jugar inmediatamente si es válida omitida por simplicidad
+                // Opcion para jugar inmediatamente si es valida omitida por simplicidad
             } else {
                 std::cout << "No hay cartas para robar." << std::endl;
             }
             turnoFinalizado = true;
+        } else if (opcion < 0 || opcion > jugadorActual->getMano()->getCantidad()) {
+            // Validar rango de opciones
+            std::cout << "Opcion invalida. Debe elegir entre 0 (robar) o 1-" << jugadorActual->getMano()->getCantidad() << " (jugar carta)." << std::endl;
         } else {
             // Intentar jugar carta
             Carta* carta = jugadorActual->getMano()->obtenerCarta(opcion - 1); // Indice 1-based en UI
@@ -153,13 +156,13 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
                     
                     // Grito de UNO
                     if (jugadorActual->getMano()->getCantidad() == 1) {
-                        std::cout << "¡¡¡ UNO !!!" << std::endl;
+                        std::cout << "UNO !!!" << std::endl;
                     }
                 } else {
-                    std::cout << "Jugada inválida. La carta no coincide en color o valor." << std::endl;
+                    std::cout << "Jugada invalida. La carta no coincide en color o valor." << std::endl;
                 }
             } else {
-                std::cout << "Índice inválido." << std::endl;
+                std::cout << "Indice invalido." << std::endl;
             }
         }
     }
@@ -172,7 +175,7 @@ bool Juego::validarJugada(Carta* carta) {
     // 2. Coincidir color
     if (carta->getColor() == colorActual) return true;
 
-    // 3. Coincidir valor/símbolo
+    // 3. Coincidir valor/simbolo
     if (carta->getValor() == valorActual) return true;
 
     return false;
@@ -181,12 +184,12 @@ bool Juego::validarJugada(Carta* carta) {
 void Juego::aplicarEfectoCarta(Carta* carta) {
     valorActual = carta->getValor();
     
-    // Si es comodín, el usuario elige el color
+    // Si es comodin, el usuario elige el color
     if (carta->getColor() == Color::NEGRO) {
         int colorElegido;
         std::cout << "Elige color (0: Rojo, 1: Azul, 2: Verde, 3: Amarillo): ";
         while (!(std::cin >> colorElegido) || colorElegido < 0 || colorElegido > 3) {
-            std::cout << "Inválido. 0-3: ";
+            std::cout << "Invalido. 0-3: ";
              std::cin.clear();
              std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
@@ -195,14 +198,14 @@ void Juego::aplicarEfectoCarta(Carta* carta) {
         colorActual = carta->getColor();
     }
 
-    // Efectos de acción
+    // Efectos de accion
     switch (carta->getValor()) {
         case Valor::SALTA:
-            std::cout << "¡Turno saltado!" << std::endl;
+            std::cout << "Turno saltado!" << std::endl;
             jugadores->siguienteTurno(); 
             break;
         case Valor::REVERSA:
-            std::cout << "¡Sentido invertido!" << std::endl;
+            std::cout << "Sentido invertido!" << std::endl;
             if (jugadores->getCantidad() == 2) {
                 jugadores->siguienteTurno();
             } else {
@@ -212,9 +215,9 @@ void Juego::aplicarEfectoCarta(Carta* carta) {
         case Valor::TOMA_DOS:
         case Valor::COMODIN_TOMA_CUATRO: {
             int cantidad = (carta->getValor() == Valor::TOMA_DOS) ? 2 : 4;
-            std::cout << "¡El siguiente jugador come " << cantidad << " cartas y pierde el turno!" << std::endl;
+            std::cout << "El siguiente jugador come " << cantidad << " cartas y pierde el turno!" << std::endl;
             
-            // Obtener siguiente jugador (víctima)
+            // Obtener siguiente jugador (victima)
             Jugador* victima = jugadores->obtenerSiguienteJugador();
             if (victima) {
                 for (int i = 0; i < cantidad; ++i) {

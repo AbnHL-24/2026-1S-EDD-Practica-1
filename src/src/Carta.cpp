@@ -34,6 +34,47 @@ void Carta::setLadoReverso(Color c, Valor v) {
 
 std::string Carta::toString() const {
     std::stringstream ss;
-    ss << "Carta [Color: " << static_cast<int>(this->color) << ", Valor: " << static_cast<int>(this->valor) << "]";
+    
+    // Convertir color a string
+    std::string colorStr;
+    switch(this->color) {
+        case Color::ROJO: colorStr = "ROJO"; break;
+        case Color::AZUL: colorStr = "AZUL"; break;
+        case Color::VERDE: colorStr = "VERDE"; break;
+        case Color::AMARILLO: colorStr = "AMARILLO"; break;
+        case Color::NARANJA: colorStr = "NARANJA"; break;
+        case Color::TURQUESA: colorStr = "TURQUESA"; break;
+        case Color::MORADO: colorStr = "MORADO"; break;
+        case Color::ROSA: colorStr = "ROSA"; break;
+        case Color::NEGRO: colorStr = "NEGRO"; break;
+        default: colorStr = "DESCONOCIDO"; break;
+    }
+    
+    // Convertir valor a string
+    std::string valorStr;
+    switch(this->valor) {
+        case Valor::CERO: valorStr = "0"; break;
+        case Valor::UNO: valorStr = "1"; break;
+        case Valor::DOS: valorStr = "2"; break;
+        case Valor::TRES: valorStr = "3"; break;
+        case Valor::CUATRO: valorStr = "4"; break;
+        case Valor::CINCO: valorStr = "5"; break;
+        case Valor::SEIS: valorStr = "6"; break;
+        case Valor::SIETE: valorStr = "7"; break;
+        case Valor::OCHO: valorStr = "8"; break;
+        case Valor::NUEVE: valorStr = "9"; break;
+        case Valor::SALTA: valorStr = "SALTA"; break;
+        case Valor::REVERSA: valorStr = "REVERSA"; break;
+        case Valor::TOMA_DOS: valorStr = "+2"; break;
+        case Valor::COMODIN: valorStr = "COMODIN"; break;
+        case Valor::COMODIN_TOMA_CUATRO: valorStr = "+4"; break;
+        case Valor::FLIP: valorStr = "FLIP"; break;
+        case Valor::TOMA_UNO: valorStr = "+1"; break;
+        case Valor::TOMA_CINCO: valorStr = "+5"; break;
+        case Valor::SALTA_TODOS: valorStr = "SALTA TODOS"; break;
+        default: valorStr = "DESCONOCIDO"; break;
+    }
+    
+    ss << "[" << colorStr << " " << valorStr << "]";
     return ss.str();
 }
