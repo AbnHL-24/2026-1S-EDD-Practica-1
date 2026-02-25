@@ -20,16 +20,39 @@ Juego::~Juego() {
 
 void Juego::inicializarJuego() {
     int numJugadores;
-    std::cout << "Ingrese el numero de jugadores (2-10): ";
-    while (!(std::cin >> numJugadores) || numJugadores < 2 || numJugadores > 10) {
-        std::cout << "Numero invalido. Intente de nuevo: ";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    bool numeroValido = false;
+    
+    while (!numeroValido) {
+        std::cout << "Ingrese el numero de jugadores (minimo 2): ";
+        while (!(std::cin >> numJugadores) || numJugadores < 2) {
+            std::cout << "Numero invalido. Debe ser minimo 2 jugadores: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        
+        // Advertencia para numeros grandes
+        if (numJugadores > 50) {
+            std::cout << "\nADVERTENCIA: " << numJugadores << " jugadores puede consumir mucha memoria y hacer el juego muy lento." << std::endl;
+            std::cout << "Desea continuar? (s/n): ";
+            char confirmacion;
+            std::cin >> confirmacion;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            
+            if (confirmacion == 's' || confirmacion == 'S') {
+                numeroValido = true;
+            } else {
+                std::cout << "Volviendo a solicitar numero de jugadores...\n" << std::endl;
+            }
+        } else {
+            numeroValido = true;
+        }
     }
-    std::cin.ignore(); // Limpiar buffer
+    
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar buffer
 
     int cantidadMazosCalculada = ((numJugadores - 1) / 6) + 1;
-    std::cout << "Configuracion: " << numJugadores << " jugadores. Se usaran " << cantidadMazosCalculada << " mazos." << std::endl;
+    int cartasTotales = cantidadMazosCalculada * 108;
+    std::cout << "Configuracion: " << numJugadores << " jugadores. Se usaran " << cantidadMazosCalculada << " mazos (" << cartasTotales << " cartas totales)." << std::endl;
 
     for (int i = 0; i < numJugadores; ++i) {
         std::string nombre;
