@@ -13,10 +13,10 @@ private:
     Pila<Carta*> cartas;
     
     // Método privado para generar un deck estándar
-    void inicializarMazoEstandar();
+    void inicializarMazoEstandar(int cantidadMazos);
     
 public:
-    Mazo(bool esFlip = false);
+    Mazo(int cantidadMazos = 1, bool esFlip = false);
     ~Mazo();
 
     void barajar();

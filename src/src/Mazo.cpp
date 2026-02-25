@@ -1,10 +1,10 @@
 #include "../include/Mazo.h"
 
-Mazo::Mazo(bool esFlip) {
+Mazo::Mazo(int cantidadMazos, bool esFlip) {
     if (esFlip) {
         // Implementar inicialización para Flip
     } else {
-        inicializarMazoEstandar();
+        inicializarMazoEstandar(cantidadMazos);
     }
 }
 
@@ -15,31 +15,33 @@ Mazo::~Mazo() {
     }
 }
 
-void Mazo::inicializarMazoEstandar() {
-    Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
-    
-    for (const auto& color : colores) {
-        // 1 carta de valor 0
-        cartas.push(new Carta(color, Valor::CERO));
+void Mazo::inicializarMazoEstandar(int cantidadMazos) {
+    for (int m = 0; m < cantidadMazos; ++m) {
+        Color colores[] = {Color::ROJO, Color::AZUL, Color::VERDE, Color::AMARILLO};
+        
+        for (const auto& color : colores) {
+            // 1 carta de valor 0
+            cartas.push(new Carta(color, Valor::CERO));
 
-        // 2 cartas de valor 1-9
-        for (int i = 1; i <= 9; ++i) {
-            cartas.push(new Carta(color, static_cast<Valor>(i)));
-            cartas.push(new Carta(color, static_cast<Valor>(i)));
+            // 2 cartas de valor 1-9
+            for (int i = 1; i <= 9; ++i) {
+                cartas.push(new Carta(color, static_cast<Valor>(i)));
+                cartas.push(new Carta(color, static_cast<Valor>(i)));
+            }
+
+            // 2 cartas de acción: Salta, Reversa, TomaDos
+            Valor acciones[] = {Valor::SALTA, Valor::REVERSA, Valor::TOMA_DOS};
+            for (const auto& accion : acciones) {
+                cartas.push(new Carta(color, accion));
+                cartas.push(new Carta(color, accion));
+            }
         }
 
-        // 2 cartas de acción: Salta, Reversa, TomaDos
-        Valor acciones[] = {Valor::SALTA, Valor::REVERSA, Valor::TOMA_DOS};
-        for (const auto& accion : acciones) {
-            cartas.push(new Carta(color, accion));
-            cartas.push(new Carta(color, accion));
+        // Cartas Comodín (4 de cada tipo)
+        for (int i = 0; i < 4; ++i) {
+            cartas.push(new Carta(Color::NEGRO, Valor::COMODIN));
+            cartas.push(new Carta(Color::NEGRO, Valor::COMODIN_TOMA_CUATRO));
         }
-    }
-
-    // Cartas Comodín (4 de cada tipo)
-    for (int i = 0; i < 4; ++i) {
-        cartas.push(new Carta(Color::NEGRO, Valor::COMODIN));
-        cartas.push(new Carta(Color::NEGRO, Valor::COMODIN_TOMA_CUATRO));
     }
 }
 

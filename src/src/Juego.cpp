@@ -28,12 +28,24 @@ void Juego::inicializarJuego() {
     }
     std::cin.ignore(); // Limpiar buffer
 
+    int cantidadMazosCalculada = ((numJugadores - 1) / 6) + 1;
+    std::cout << "Configuración: " << numJugadores << " jugadores. Se usarán " << cantidadMazosCalculada << " mazos." << std::endl;
+
     for (int i = 0; i < numJugadores; ++i) {
         std::string nombre;
         std::cout << "Nombre del Jugador " << (i + 1) << ": ";
         std::getline(std::cin, nombre);
         jugadores->agregarJugador(nombre);
     }
+
+    // Calcular número de mazos necesarios
+    // Regla: 1-6 jugadores: 1 mazo. 7-12: 2 mazos, etc.
+    // Fórmula: ((n_jugadores - 1) / 6 + 1)
+    int cantidadMazos = ((numJugadores - 1) / 6) + 1;
+    
+    // Reconstruir el mazo con la cantidad correcta
+    delete mazo;
+    mazo = new Mazo(cantidadMazos, false);
 
     mazo->barajar();
     repartirCartasIniciales();
