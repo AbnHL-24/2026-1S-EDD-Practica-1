@@ -75,6 +75,8 @@ public:
         return sentidoHorario ? turnoActual->siguiente->jugador : turnoActual->anterior->jugador;
     }
 
+    int getCantidad() const { return cantidadJugadores; }
+
     void mostrarJugadores() const {
         if (!cabeza) return;
         NodoJugador* temp = cabeza;
