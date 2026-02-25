@@ -17,6 +17,9 @@ private:
     Color colorActual;
     Valor valorActual;
     bool juegoTerminado;
+    
+    // Control de UNO
+    Jugador* jugadorConUnaCartaSinGritar;
 
     // Métodos privados de ayuda
     void repartirCartasIniciales();
@@ -24,6 +27,7 @@ private:
     bool validarJugada(Carta* cartaJugada);
     void aplicarEfectoCarta(Carta* carta);
     void siguienteTurno();
+    void verificarReporteUNO();
 
 public:
     Juego();

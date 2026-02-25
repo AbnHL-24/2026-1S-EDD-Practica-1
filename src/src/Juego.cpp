@@ -10,6 +10,7 @@ Juego::Juego() {
     juegoTerminado = false;
     colorActual = Color::NEGRO; // Inicial temporal
     valorActual = Valor::CERO;  // Inicial temporal
+    jugadorConUnaCartaSinGritar = nullptr;
 }
 
 Juego::~Juego() {
@@ -103,6 +104,10 @@ void Juego::repartirCartasIniciales() {
 void Juego::buclePrincipal() {
     while (!juegoTerminado) {
         Jugador* actual = jugadores->obtenerJugadorActual();
+        
+        // Verificar si alguien quiere reportar antes de que inicie el turno
+        verificarReporteUNO();
+        
         jugarTurno(actual);
 
         // Verificar victoria
@@ -158,7 +163,6 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
                 Carta* robada = mazo->robarCarta();
                 jugadorActual->tomarCarta(robada);
                 std::cout << "Has robado: " << robada->toString() << std::endl;
-                // Opcion para jugar inmediatamente si es valida omitida por simplicidad
             } else {
                 std::cout << "No hay cartas para robar." << std::endl;
             }
@@ -175,12 +179,29 @@ void Juego::jugarTurno(Jugador* jugadorActual) {
                     jugadorActual->jugarCarta(opcion - 1);
                     pilaDescarte->push(carta);
                     aplicarEfectoCarta(carta);
-                    turnoFinalizado = true;
                     
-                    // Grito de UNO
+                    // Sistema de grito de UNO manual
                     if (jugadorActual->getMano()->getCantidad() == 1) {
-                        std::cout << "UNO !!!" << std::endl;
+                        std::cout << "\nTienes 1 carta! Escribe 'UNO' para gritar UNO (o presiona Enter para omitir): ";
+                        std::cin.ignore(); // Limpiar el buffer del numero anterior
+                        std::string grito;
+                        std::getline(std::cin, grito);
+                        
+                        if (grito == "UNO" || grito == "uno") {
+                            std::cout << jugadorActual->getNombre() << " ha gritado: UNO !!!" << std::endl;
+                            jugadorConUnaCartaSinGritar = nullptr; // Grito correctamente
+                        } else {
+                            std::cout << jugadorActual->getNombre() << " no grito UNO..." << std::endl;
+                            jugadorConUnaCartaSinGritar = jugadorActual; // Marcar para posible reporte
+                        }
+                    } else {
+                        // Si ya no tiene 1 carta, limpiar el flag
+                        if (jugadorConUnaCartaSinGritar == jugadorActual) {
+                            jugadorConUnaCartaSinGritar = nullptr;
+                        }
                     }
+                    
+                    turnoFinalizado = true;
                 } else {
                     std::cout << "Jugada invalida. La carta no coincide en color o valor." << std::endl;
                 }
@@ -266,4 +287,68 @@ void Juego::aplicarEfectoCarta(Carta* carta) {
 
 void Juego::siguienteTurno() {
     jugadores->siguienteTurno();
+}
+
+void Juego::verificarReporteUNO() {
+    // Si hay un jugador que no grito UNO, dar oportunidad de reportar
+    if (jugadorConUnaCartaSinGritar != nullptr) {
+        std::cout << "\n>>> Alguien quiere reportar que " << jugadorConUnaCartaSinGritar->getNombre() 
+                  << " no grito UNO? (s/n): ";
+        
+        char respuesta;
+        std::cin >> respuesta;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        
+        if (respuesta == 's' || respuesta == 'S') {
+            // Verificar si efectivamente tiene 1 carta
+            if (jugadorConUnaCartaSinGritar->getMano()->getCantidad() == 1) {
+                std::cout << "REPORTE EXITOSO! " << jugadorConUnaCartaSinGritar->getNombre() 
+                          << " no grito UNO y debe robar 2 cartas." << std::endl;
+                
+                // Dar 2 cartas de penalizacion
+                for (int i = 0; i < 2; ++i) {
+                    if (mazo->estaVacio()) {
+                        Carta* cima = pilaDescarte->pop();
+                        mazo->rellenarDesde(*pilaDescarte);
+                        pilaDescarte->push(cima);
+                    }
+                    if (!mazo->estaVacio()) {
+                        jugadorConUnaCartaSinGritar->tomarCarta(mazo->robarCarta());
+                    }
+                }
+                
+                std::cout << jugadorConUnaCartaSinGritar->getNombre() << " ahora tiene " 
+                          << jugadorConUnaCartaSinGritar->getMano()->getCantidad() << " cartas." << std::endl;
+                jugadorConUnaCartaSinGritar = nullptr; // Limpiar el flag
+            } else {
+                std::cout << "REPORTE ERRONEO! " << jugadorConUnaCartaSinGritar->getNombre() 
+                          << " tiene " << jugadorConUnaCartaSinGritar->getMano()->getCantidad() 
+                          << " cartas (no 1)." << std::endl;
+                std::cout << "Quien reporto: Ingrese su nombre: ";
+                
+                std::string nombreReportador;
+                std::getline(std::cin, nombreReportador);
+                
+                std::cout << nombreReportador << " hizo un reporte erroneo y debe robar 2 cartas." << std::endl;
+                
+                // Buscar al reportador y darle 2 cartas de penalizacion
+                // Por simplicidad, le damos las cartas al jugador actual (asumiendo que es quien reporto)
+                Jugador* reportador = jugadores->obtenerJugadorActual();
+                for (int i = 0; i < 2; ++i) {
+                    if (mazo->estaVacio()) {
+                        Carta* cima = pilaDescarte->pop();
+                        mazo->rellenarDesde(*pilaDescarte);
+                        pilaDescarte->push(cima);
+                    }
+                    if (!mazo->estaVacio()) {
+                        reportador->tomarCarta(mazo->robarCarta());
+                    }
+                }
+                
+                jugadorConUnaCartaSinGritar = nullptr; // Limpiar el flag
+            }
+        } else {
+            std::cout << "Nadie reporto. El juego continua." << std::endl;
+        }
+    }
 }
